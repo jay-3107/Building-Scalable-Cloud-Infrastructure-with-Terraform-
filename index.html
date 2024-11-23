@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create AWS Instance</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Create AWS Instance</h2>
+    <form id="aws-form">
+      <label for="accessKeyId">AWS Access Key:</label>
+      <input type="text" id="accessKeyId" name="accessKeyId" placeholder="Enter AWS Access Key" required>
+
+      <label for="secretAccessKey">AWS Secret Key:</label>
+      <input type="password" id="secretAccessKey" name="secretAccessKey" placeholder="Enter AWS Secret Key" required>
+
+      <label for="numberOfInstances">Number of Instances:</label>
+      <input type="number" id="numberOfInstances" name="numberOfInstances" min="1" value="1" required>
+
+      <label for="instanceType">Instance Type:</label>
+      <input type="text" id="instanceType" name="instanceType" placeholder="e.g., t2.micro" required>
+
+      <label for="amiId">AMI ID:</label>
+      <input type="text" id="amiId" name="amiId" placeholder="Enter AMI ID" required>
+
+      <label for="diskSize">Disk Size (GB):</label>
+      <input type="number" id="diskSize" name="diskSize" min="1" required>
+
+      <!-- New Instance Name Input -->
+      <label for="instanceName">Instance Name:</label>
+      <input type="text" id="instanceName" name="instanceName" placeholder="Enter Instance Name" required>
+
+      <button type="submit">Create Instance</button>
+    </form>
+
+    <div id="response-message"></div>
+  </div>
+
+  <script>
+    document.getElementById('aws-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData);
+
+      try {
+        const response = await fetch('/create-instance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        document.getElementById('response-message').innerHTML = result.message + 
+          (result.instanceId ? `<br>Instance ID: ${result.instanceId}` : '');
+      } catch (error) {
+        document.getElementById('response-message').innerHTML = 'Error: ' + error.message;
+      }
+    });
+  </script>
+
+</body>
+</html>
